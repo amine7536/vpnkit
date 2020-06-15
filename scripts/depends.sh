@@ -3,6 +3,8 @@ set -ex
 
 # Set up the exact set of dependant packages
 
+REPO_ROOT=$(git rev-parse --show-toplevel)
+
 case "$(uname -s)" in
   CYGWIN*)
 
@@ -28,13 +30,12 @@ case "$(uname -s)" in
 
     ### Custom
 
-    export REPO_ROOT=$(git rev-parse --show-toplevel)
+    export REPO_ROOT=$(cygpath.exe -w $(git rev-parse --show-toplevel))    
     export OPAM_REPO=$(cygpath.exe -w "${REPO_ROOT}/repo/win32")
     export OPAMROOT=$(cygpath.exe -w "${REPO_ROOT}/_build/opam")
   ;;
 esac
 
-REPO_ROOT=$(git rev-parse --show-toplevel)
 
 if [ -z "${OPAMROOT}" ]; then
   OPAMROOT=${REPO_ROOT}/_build/opam
