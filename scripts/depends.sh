@@ -56,7 +56,8 @@ if [ -f /.dockerenv ]; then
   OPAM_SANBOX_ARG="--disable-sandboxing"
 fi
 
-opam init -v -n ${OPAM_COMP_ARG} ${OPAM_SWITCH_ARG} ${OPAM_SANBOX_ARG}
+# opam init -v -n ${OPAM_COMP_ARG} ${OPAM_SWITCH_ARG} ${OPAM_SANBOX_ARG}
+opam init -v -n ${OPAM_COMP_ARG} ${OPAM_SWITCH_ARG} local "${OPAM_REPO}" $OPAM_SANBOX_ARG
 echo opam configuration is:
 opam config env
 eval $(opam config env)
