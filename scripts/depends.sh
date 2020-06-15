@@ -10,12 +10,12 @@ case "$(uname -s)" in
 
     # default setttings
     SWITCH="${OPAM_COMP}"
-    OPAM_URL='https://dl.dropboxusercontent.com/s/b2q2vjau7if1c1b/opam64.tar.xz'
+    OPAM_URL='https://github.com/fdopen/opam-repository-mingw/releases/download/0.0.0.2/opam64.tar.xz'
     OPAM_ARCH=opam64
 
     if [ "$PROCESSOR_ARCHITECTURE" != "AMD64" ] && \
            [ "$PROCESSOR_ARCHITEW6432" != "AMD64" ]; then
-        OPAM_URL='https://dl.dropboxusercontent.com/s/eo4igttab8ipyle/opam32.tar.xz'
+      	OPAM_URL='https://github.com/fdopen/opam-repository-mingw/releases/download/0.0.0.2/opam32.tar.xz'
         OPAM_ARCH=opam32
     fi
 
@@ -46,30 +46,25 @@ export OPAMCOLORS=1
 
 # if a compiler is specified, use it; otherwise use the system compiler
 if [ -n "${OPAM_COMP}" ]; then
-  OPAM_COMP_ARG="--comp=${OPAM_COMP}"
+  OPAM_COMP_ARG="--compiler=${OPAM_COMP}"
   OPAM_SWITCH_ARG="--switch=${OPAM_COMP}"
 fi
 
-opam init -v -n "${OPAM_COMP_ARG}" "${OPAM_SWITCH_ARG}" local "${OPAM_REPO}"
+# Disable sandboxing when running in a container
+if [ -f /.dockerenv ]; then
+  OPAM_SANBOX_ARG="--disable-sandboxing"
+fi
+
+opam init -v -n ${OPAM_COMP_ARG} ${OPAM_SWITCH_ARG} ${OPAM_SANBOX_ARG}
 echo opam configuration is:
 opam config env
 eval $(opam config env)
 
 export PATH="${OPAMROOT}/${OPAM_COMP}/bin:${PATH}"
 
-opam install depext -y -v
-opam install depext-cygwinports -y || true
-
-OPAMBUILDTEST=1 opam depext -u vpnkit
-
-# Debug a failure to find stringext's archive
-OPAMVERBOSE=1 opam install stringext -y
-
-# Don't run all the unit tests of all upstream packages in the universe
-# for speed. As a special exception we will run the tests for tcpip
-OPAMVERBOSE=1 opam install --deps-only tcpip -y
-OPAMVERBOSE=1 opam install tcpip -t
-
-opam install $(ls -1 ${OPAM_REPO}/packages/upstream) -y
-OPAMVERBOSE=1 opam install alcotest charrua-client-mirage -y
-OPAMVERBOSE=1 opam install --deps-only vpnkit -y
+opam remote add vpnkit ${OPAM_REPO}
+opam pin add -y -n vpnkit ${REPO_ROOT}
+OPAMWITHTEST=false opam depext vpnkit -y
+OPAMVERBOSE=false opam install alcotest charrua-client-mirage tcpip -y
+opam install --deps-only vpnkit -y
+opam pin remove vpnkit

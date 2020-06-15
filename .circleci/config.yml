@@ -2,11 +2,11 @@ version: 2
 jobs:
   build:
     macos:
-      xcode: "9.0"
+      xcode: "11.5"
     environment:
       OPAMYES: "1"
       OPAMJOBS: "2"
-      MACOSX_DEPLOYMENT_TARGET: "10.10"
+      MACOSX_DEPLOYMENT_TARGET: "10.15"
       CUSTOM_OPAM: "1"
       OPAM_REPO: repo/darwin
       OPAM_COMP: "4.07.0"
@@ -14,9 +14,7 @@ jobs:
       TERM: vt100
     steps:
       - checkout
-      - run: brew uninstall python # remove files in /usr/local/bin
-      - run: brew install wget pkg-config dylibbundler
-      - run: brew install https://gist.githubusercontent.com/djs55/7a94ee5aeb882ef5399c0485d2affdda/raw/bc04ff96e0082d7ee07642337dbb77c51b93d678/opam.rb
+      - run: brew install wget opam pkg-config autoconf dylibbundler
       - run: make
       - run: make artefacts
       - run: make test
