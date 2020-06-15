@@ -57,18 +57,18 @@ if [ -f /.dockerenv ]; then
 fi
 
 # opam init -v -n ${OPAM_COMP_ARG} ${OPAM_SWITCH_ARG} ${OPAM_SANBOX_ARG}
-opam init -v -n ${OPAM_COMP_ARG} ${OPAM_SWITCH_ARG} local "${OPAM_REPO}" $OPAM_SANBOX_ARG
+opam init default "https://github.com/fdopen/opam-repository-mingw.git#opam2" -c "ocaml-variants.4.07.1+mingw32" --disable-sandboxing
 echo opam configuration is:
 opam config env
 eval $(opam config env)
 
 export PATH="${OPAMROOT}/${OPAM_COMP}/bin:${PATH}"
 
-# opam remote add vpnkit ${OPAM_REPO}
-# opam pin add -y -n vpnkit ${REPO_ROOT}
+opam remote add vpnkit ${OPAM_REPO}
+opam pin add -y -n vpnkit ${REPO_ROOT}
 opam install depext -y -v
 opam install depext-cygwinports -y || true
 OPAMWITHTEST=false opam depext vpnkit -y
 OPAMVERBOSE=false opam install alcotest charrua-client-mirage tcpip -y
 opam install --deps-only vpnkit -y
-# opam pin remove vpnkit
+opam pin remove vpnkit
