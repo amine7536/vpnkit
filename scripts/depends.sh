@@ -65,6 +65,8 @@ export PATH="${OPAMROOT}/${OPAM_COMP}/bin:${PATH}"
 
 opam remote add vpnkit ${OPAM_REPO}
 opam pin add -y -n vpnkit ${REPO_ROOT}
+opam install depext -y -v
+opam install depext-cygwinports -y || true
 OPAMWITHTEST=false opam depext vpnkit -y
 OPAMVERBOSE=false opam install alcotest charrua-client-mirage tcpip -y
 opam install --deps-only vpnkit -y
