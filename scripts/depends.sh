@@ -29,7 +29,7 @@ case "$(uname -s)" in
     export PATH
 
     ### Custom
-
+    OPAM_SANBOX_ARG="--disable-sandboxing"
     export REPO_ROOT=$(cygpath.exe -w $(git rev-parse --show-toplevel))    
     export OPAM_REPO=$(cygpath.exe -w "${REPO_ROOT}/repo/win32")
     export OPAMROOT=$(cygpath.exe -w "${REPO_ROOT}/_build/opam")
